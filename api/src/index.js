@@ -1,7 +1,7 @@
 const CORS_HEADERS = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-	'Access-Control-Allow-Headers': 'Content-Type',
+	'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password',
 };
 
 export default {
@@ -21,6 +21,11 @@ export default {
 			return new Response(JSON.stringify(data), {
 				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
 			});
+		}
+
+		const adminPassword = request.headers.get('X-Admin-Password');
+		if (adminPassword !== env.ADMIN_PASSWORD) {
+			return new Response('Unauthorized', { status: 401, headers: CORS_HEADERS });
 		}
 
 		if (url.pathname === '/api/upload' && request.method === 'POST') {

@@ -246,12 +246,12 @@ const adminUpload  = document.querySelector('.admin-upload');
 const adminGrid    = document.querySelector('.admin-grid');
 const adminAddTile = document.querySelector('#admin-add');
 
+let adminPassword = null;
+
 function openAdmin() {
   const pwd = prompt('Mot de passe :');
-  if (pwd !== 'admin') {
-    alert('Mot de passe incorrect.');
-    return;
-  }
+  if (!pwd) return;
+  adminPassword = pwd;
   homescreen.style.display = 'none';
   admin.style.display = 'flex';
   loadAdminGallery();
@@ -304,13 +304,19 @@ document.querySelector('.admin-delete-btn').addEventListener('click', () => {
 async function deletePhoto({ sha, path, name }) {
   const res = await fetch(`${WORKER_URL}/api/delete`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Password': adminPassword
+    },
     body: JSON.stringify({ path, name, sha })
   });
   if (res.ok) {
     adminViewer.style.display = 'none';
     admin.style.display = 'flex';
     loadAdminGallery();
+  } else if (res.status === 401) {
+    alert('Mot de passe incorrect.');
+    adminPassword = null;
   } else {
     alert('Erreur lors de la suppression.');
   }
@@ -383,7 +389,10 @@ document.getElementById('admin-upload-btn').addEventListener('click', async () =
 
     const res = await fetch(`${WORKER_URL}/api/upload`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Password': adminPassword
+      },
       body: JSON.stringify({ filename, content: base64 })
     });
 
@@ -395,6 +404,9 @@ document.getElementById('admin-upload-btn').addEventListener('click', async () =
         admin.style.display = 'flex';
         loadAdminGallery();
       }, 1000);
+    } else if (res.status === 401) {
+      status.textContent = 'Mot de passe incorrect.';
+      adminPassword = null;
     } else {
       status.textContent = 'Erreur lors du téléchargement.';
     }
