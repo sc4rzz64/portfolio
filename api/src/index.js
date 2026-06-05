@@ -23,6 +23,14 @@ export default {
 			});
 		}
 
+		if (url.pathname === '/api/auth' && request.method === 'POST') {
+			const pwd = request.headers.get('X-Admin-Password');
+			if (pwd !== env.ADMIN_PASSWORD) {
+				return new Response('Unauthorized', { status: 401, headers: CORS_HEADERS });
+			}
+			return new Response('OK', { status: 200, headers: CORS_HEADERS });
+		}
+
 		const adminPassword = request.headers.get('X-Admin-Password');
 		if (adminPassword !== env.ADMIN_PASSWORD) {
 			return new Response('Unauthorized', { status: 401, headers: CORS_HEADERS });
