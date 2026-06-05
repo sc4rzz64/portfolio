@@ -248,9 +248,23 @@ const adminAddTile = document.querySelector('#admin-add');
 
 let adminPassword = null;
 
-function openAdmin() {
+async function openAdmin() {
   const pwd = prompt('Mot de passe :');
   if (!pwd) return;
+
+  const res = await fetch(`${WORKER_URL}/api/auth`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Password': pwd
+    }
+  });
+
+  if (res.status === 401) {
+    alert('Mot de passe incorrect.');
+    return;
+  }
+
   adminPassword = pwd;
   homescreen.style.display = 'none';
   admin.style.display = 'flex';
