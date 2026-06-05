@@ -89,18 +89,22 @@
         </a>
       </div>
       <div class="dock-icon" id="liveleak">
-          <img src="img/liveleak.jpg" alt="liveleak"/>
-          <span>LiveLeak</span>
+        <img src="img/liveleak.jpg" alt="liveleak"/>
+        <span>LiveLeak</span>
       </div>
     </div>
     <div class="dock">
       <div class="dock-icon" id="foto">
-          <img src="img/photo.png" alt="galleria"/>
-          <span>Photos</span>
+        <img src="img/photo.png" alt="galleria"/>
+        <span>Photos</span>
+      </div>
+      <div class="dock-icon" id="admin-icon">
+        <img src="img/phone.png" alt="admin"/>
+        <span>Admin</span>
       </div>
       <div class="dock-icon" id="phone">
-          <img src="img/phone.png" alt="Phone"/>
-          <span>Phone</span>
+        <img src="img/phone.png" alt="Phone"/>
+        <span>Phone</span>
       </div>
     </div>
   </div>
@@ -109,10 +113,6 @@
       <span class="gallery-back">‹ Back</span>
     </div>
     <div class="gallery-grid">
-      <img src="img/gallery/foto1gambas.jpg" alt=""/>
-      <img src="img/gallery/foto1.jpeg" alt=""/>
-      <img src="img/gallery/foto2.jpeg" alt=""/>
-      <img src="img/gallery/foto3.jpeg" alt=""/>
     </div>
   </div>
   <div class="liveleak" style="display:none;">
@@ -121,6 +121,44 @@
   </div>
   <div class="hotline" style="display:none;">
     <span class="hotline-back">‹ Back</span>
+  </div>
+
+  <div class="admin" style="display:none;">
+    <div class="admin-top">
+      <span class="admin-back">‹ Retour</span>
+      <span class="admin-title">PANNEAU ADMIN</span>
+    </div>
+    <div class="admin-grid">
+      <div class="admin-add-tile" id="admin-add">
+        <span class="admin-plus">+</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-viewer" style="display:none;">
+    <div class="admin-viewer-bar">
+      <span class="admin-viewer-back">‹ Retour</span>
+    </div>
+    <img class="admin-viewer-img" src="" alt=""/>
+    <div class="admin-viewer-bottom">
+      <button class="admin-delete-btn">🗑</button>
+    </div>
+  </div>
+
+  <div class="admin-upload" style="display:none;">
+    <div class="admin-viewer-bar">
+      <span class="admin-upload-back">‹ Retour</span>
+      <span style="color:white; font-size:16px;">Nouvelle photo</span>
+    </div>
+    <div class="admin-upload-body">
+      <label class="admin-upload-label" id="admin-upload-label">
+        <input type="file" id="admin-file-input" accept="image/*" style="display:none;"/>
+        <span id="admin-upload-hint">Appuyez ou glissez une image ici</span>
+        <img id="admin-preview" src="" alt="" style="display:none; max-width:100%; max-height:300px; border-radius:8px;"/>
+      </label>
+      <button class="admin-upload-btn" id="admin-upload-btn" disabled>Télécharger</button>
+      <p class="admin-upload-status" id="admin-upload-status"></p>
+    </div>
   </div>
 </div>
 
