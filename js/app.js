@@ -400,11 +400,34 @@ function applyBackground(dataUrl) {
   if (saved) applyBackground(saved);
 })();
 
+function showUploadModal() {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'upload-modal-overlay';
+
+    overlay.innerHTML = `
+      <div class="upload-modal">
+        <p class="upload-modal-title">Choisir la destination</p>
+        <p class="upload-modal-subtitle">Où voulez-vous envoyer cette photo ?</p>
+        <button class="upload-modal-btn" id="modal-gallery">Ajouter à la galerie</button>
+        <button class="upload-modal-btn" id="modal-bg">Définir comme fond d'écran</button>
+        <button class="upload-modal-btn danger" id="modal-cancel">Annuler</button>
+      </div>
+    `;
+
+    document.querySelector('.iphone').appendChild(overlay);
+
+    overlay.querySelector('#modal-gallery').addEventListener('click', () => { overlay.remove(); resolve('gallery'); });
+    overlay.querySelector('#modal-bg').addEventListener('click', () => { overlay.remove(); resolve('background'); });
+    overlay.querySelector('#modal-cancel').addEventListener('click', () => { overlay.remove(); resolve(null); });
+  });
+}
+
 document.getElementById('admin-upload-btn').addEventListener('click', async () => {
   if (!uploadFile) return;
 
-  const choice = confirm('Choisissez la destination :\n\nOK → Ajouter à la galerie\nAnnuler → Définir comme fond d\'écran');
-  const uploadType = choice ? 'gallery' : 'background';
+  const choice = await showUploadModal();
+  if (!choice) return;
 
   const status = document.getElementById('admin-upload-status');
   status.textContent = 'Téléchargement en cours...';
@@ -414,7 +437,7 @@ document.getElementById('admin-upload-btn').addEventListener('click', async () =
     const base64 = ev.target.result.split(',')[1];
     const filename = `${Date.now()}_${uploadFile.name}`;
 
-    if (uploadType === 'gallery') {
+    if (choice === 'gallery') {
       const res = await fetch(`${WORKER_URL}/api/upload`, {
         method: 'POST',
         headers: {
