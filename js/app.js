@@ -391,8 +391,21 @@ uploadLabel.addEventListener('drop', (e) => {
   }
 });
 
+function applyBackground(dataUrl) {
+  document.querySelector('.iphone').style.backgroundImage = `url('${dataUrl}')`;
+}
+
+(function () {
+  const saved = localStorage.getItem('custom_background');
+  if (saved) applyBackground(saved);
+})();
+
 document.getElementById('admin-upload-btn').addEventListener('click', async () => {
   if (!uploadFile) return;
+
+  const choice = confirm('Choisissez la destination :\n\nOK → Ajouter à la galerie\nAnnuler → Définir comme fond d\'écran');
+  const uploadType = choice ? 'gallery' : 'background';
+
   const status = document.getElementById('admin-upload-status');
   status.textContent = 'Téléchargement en cours...';
 
@@ -401,28 +414,40 @@ document.getElementById('admin-upload-btn').addEventListener('click', async () =
     const base64 = ev.target.result.split(',')[1];
     const filename = `${Date.now()}_${uploadFile.name}`;
 
-    const res = await fetch(`${WORKER_URL}/api/upload`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Admin-Password': adminPassword
-      },
-      body: JSON.stringify({ filename, content: base64 })
-    });
+    if (uploadType === 'gallery') {
+      const res = await fetch(`${WORKER_URL}/api/upload`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': adminPassword
+        },
+        body: JSON.stringify({ filename, content: base64 })
+      });
 
-    if (res.ok) {
-      status.textContent = '✓ Photo téléchargée !';
+      if (res.ok) {
+        status.textContent = '✓ Photo ajoutée à la galerie !';
+        uploadFile = null;
+        setTimeout(() => {
+          adminUpload.style.display = 'none';
+          admin.style.display = 'flex';
+          loadAdminGallery();
+        }, 1000);
+      } else if (res.status === 401) {
+        status.textContent = 'Mot de passe incorrect.';
+        adminPassword = null;
+      } else {
+        status.textContent = 'Erreur lors du téléchargement.';
+      }
+
+    } else {
+      localStorage.setItem('custom_background', ev.target.result);
+      applyBackground(ev.target.result);
+      status.textContent = '✓ Fond d\'écran mis à jour !';
       uploadFile = null;
       setTimeout(() => {
         adminUpload.style.display = 'none';
         admin.style.display = 'flex';
-        loadAdminGallery();
       }, 1000);
-    } else if (res.status === 401) {
-      status.textContent = 'Mot de passe incorrect.';
-      adminPassword = null;
-    } else {
-      status.textContent = 'Erreur lors du téléchargement.';
     }
   };
   reader.readAsDataURL(uploadFile);
