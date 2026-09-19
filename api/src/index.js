@@ -23,6 +23,13 @@ export default {
 			});
 		}
 
+		if (url.pathname === '/api/background' && request.method === 'GET') {
+			const bgUrl = await env.SETTINGS.get('background');
+			return new Response(JSON.stringify({ url: bgUrl || null }), {
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+			});
+		}
+
 		if (url.pathname === '/api/auth' && request.method === 'POST') {
 			const pwd = request.headers.get('X-Admin-Password');
 			if (pwd !== env.ADMIN_PASSWORD) {
@@ -53,6 +60,35 @@ export default {
 			const data = await res.json();
 			return new Response(JSON.stringify(data), {
 				status: res.status,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+			});
+		}
+
+		if (url.pathname === '/api/background' && request.method === 'POST') {
+			const body = await request.json();
+			const filename = `bg_${body.filename}`;
+			const res = await fetch(
+				`https://api.github.com/repos/${env.GITHUB_REPO}/contents/${env.GALLERY_PATH}/${filename}`,
+				{
+					method: 'PUT',
+					headers: {
+						Authorization: `token ${env.GITHUB_TOKEN}`,
+						'Content-Type': 'application/json',
+						'User-Agent': 'sc4rzz-worker'
+					},
+					body: JSON.stringify({ message: `upload ${filename}`, content: body.content })
+				}
+			);
+			const data = await res.json();
+			if (!res.ok) {
+				return new Response(JSON.stringify(data), {
+					status: res.status,
+					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+				});
+			}
+			const downloadUrl = data.content.download_url;
+			await env.SETTINGS.put('background', downloadUrl);
+			return new Response(JSON.stringify({ url: downloadUrl }), {
 				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
 			});
 		}

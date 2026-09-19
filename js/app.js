@@ -395,9 +395,15 @@ function applyBackground(dataUrl) {
   document.querySelector('.iphone').style.backgroundImage = `url('${dataUrl}')`;
 }
 
-(function () {
-  const saved = localStorage.getItem('custom_background');
-  if (saved) applyBackground(saved);
+(async function () {
+  try {
+    const res = await fetch(`${WORKER_URL}/api/background`);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.url) applyBackground(data.url);
+  } catch (e) {
+    // pas de fond personnalisé disponible, on garde le fond CSS par défaut
+  }
 })();
 
 function showUploadModal() {
@@ -463,14 +469,30 @@ document.getElementById('admin-upload-btn').addEventListener('click', async () =
       }
 
     } else {
-      localStorage.setItem('custom_background', ev.target.result);
-      applyBackground(ev.target.result);
-      status.textContent = '✓ Fond d\'écran mis à jour !';
-      uploadFile = null;
-      setTimeout(() => {
-        adminUpload.style.display = 'none';
-        admin.style.display = 'flex';
-      }, 1000);
+      const res = await fetch(`${WORKER_URL}/api/background`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': adminPassword
+        },
+        body: JSON.stringify({ filename, content: base64 })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        applyBackground(data.url);
+        status.textContent = '✓ Fond d\'écran mis à jour !';
+        uploadFile = null;
+        setTimeout(() => {
+          adminUpload.style.display = 'none';
+          admin.style.display = 'flex';
+        }, 1000);
+      } else if (res.status === 401) {
+        status.textContent = 'Mot de passe incorrect.';
+        adminPassword = null;
+      } else {
+        status.textContent = 'Erreur lors du téléchargement.';
+      }
     }
   };
   reader.readAsDataURL(uploadFile);
