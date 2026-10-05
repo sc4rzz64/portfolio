@@ -635,3 +635,36 @@ body {
 .upload-modal-btn:active {
   background: #2a2a2a;
 }
+
+.notifica {
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+}
+
+.notifica-foto {
+  height: 5rem;
+  width: 5rem;
+  margin-left: 1rem;
+}
+
+.notifica-foto img{
+  height: 100%;
+  width: 100%;
+  border-radius: 20%;
+}
+
+.testo-notifica {
+  color: white;
+  margin-right: 6rem;
+}
+
+.notifica-data {
+  color:white;
+  font-size: 18px;
+  margin-right: 1rem;
+}
