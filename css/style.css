@@ -126,8 +126,10 @@ body {
 }
 
 .spazio {
-  height: 621px;
+  flex: 1;
+  min-height: 0;
   width: 100%;
+  padding: 0;
   transition: opacity 0.4s ease;
 }
 
@@ -636,35 +638,67 @@ body {
   background: #2a2a2a;
 }
 
+
+
 .notifica {
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,50%);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+  border-radius: 0;
   width: 100%;
-  height: 8rem;
+  padding: 10px 12px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  flex-direction: row;
+  gap: 12px;
 }
 
 .notifica-foto {
-  height: 5rem;
-  width: 5rem;
-  margin-left: 1rem;
+  flex-shrink: 0;
+  height: 56px;
+  width: 56px;
 }
 
-.notifica-foto img{
+.notifica-foto img {
   height: 100%;
   width: 100%;
+  object-fit: cover;
   border-radius: 20%;
 }
 
 .testo-notifica {
+  flex: 1;
+  min-width: 0;
   color: white;
-  margin-right: 6rem;
+  margin: 0;
+}
+
+.testo-notifica h1 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.testo-notifica p {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.3;
+  margin-top: 2px;
 }
 
 .notifica-data {
-  color:white;
-  font-size: 18px;
-  margin-right: 1rem;
+  align-self: flex-start;
+  flex-shrink: 0;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  text-align: right;
+  line-height: 1.3;
+}
+
+@media (max-width: 700px) {
+  .notifica { padding: 8px 10px; gap: 10px; }
+  .notifica-foto { height: 48px; width: 48px; }
+  .testo-notifica h1 { font-size: 15px; }
+  .testo-notifica p { font-size: 13px; }
+  .notifica-data { font-size: 11px; }
 }
